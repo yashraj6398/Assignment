@@ -1,24 +1,25 @@
-// server/server.js
 const express = require('express');
+const bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
 const port = 5000;
 
-let leftClicks = 0;
-let rightClicks = 0;
+let counts = {
+  left: 0,
+  right: 0,
+};
 
 app.use(cors());
-app.use(express.json());
+app.use(bodyParser.json());
 
-app.post('/clicks', (req, res) => {
-  const { direction } = req.body;
-  if (direction === 'left') {
-    leftClicks += 1;
-  } else if (direction === 'right') {
-    rightClicks += 1;
+app.post('/updateCount', (req, res) => {
+  const { direction, count } = req.body;
+  console.log(`Received direction: ${direction}, count: ${count}`); 
+  if (direction === 'left' || direction === 'right') {
+    counts[direction] = count;
+    console.log(`Updated ${direction} count to: ${count}`);
   }
-  console.log(`Left Clicks: ${leftClicks}, Right Clicks: ${rightClicks}`);
-  res.sendStatus(200);
+  res.json(counts);
 });
 
 app.listen(port, () => {
